@@ -55,7 +55,7 @@ def check_dependencies():
         
     if missing:
         print("=" * 70)
-        print("❌ FEHLENDE ABHÄNGIGKEITEN ERKANNT")
+        print("FEHLENDE ABHÄNGIGKEITEN ERKANNT")
         print("=" * 70)
         print("Um dieses GNN-Trainingsskript auszuführen, müssen folgende Bibliotheken")
         print("installiert sein:")
@@ -218,7 +218,7 @@ def train_model(epochs=30, lr=0.01, hidden_dim=16):
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
     criterion = nn.CrossEntropyLoss()
     
-    print("\n🚀 Starte GNN-Modelltraining...")
+    print("\n Starte GNN-Modelltraining...")
     model.train()
     
     for epoch in range(1, epochs + 1):
@@ -245,7 +245,7 @@ def train_model(epochs=30, lr=0.01, hidden_dim=16):
     os.makedirs("models", exist_ok=True)
     model_path = "models/chemical_gnn.pth"
     torch.save(model.state_dict(), model_path)
-    print(f"\n✅ Training erfolgreich beendet! Modell gespeichert unter: {model_path}")
+    print(f"\n Training erfolgreich beendet! Modell gespeichert unter: {model_path}")
     print("Dieses Modell kann nun zur Klassifikation von Molekülgraphen verwendet werden.")
 
 
