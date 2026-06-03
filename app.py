@@ -1,6 +1,5 @@
 import os
 import streamlit as st
-import streamlit.components.v1 as components
 from core.renderer import smiles_to_chemdraw_svg, is_valid_smiles
 from core.mechanism import predict_mechanism
 
@@ -665,13 +664,13 @@ if st.session_state.prediction_result is not None:
             m_col1, m_col2, m_col3 = st.columns(3)
             
             with m_col1:
-                components.html(wrap_svg(edukt_svg, "Edukt (Ausgangsstoff)", last_edukt, "#00f0ff"), height=540, scrolling=False)
+                st.iframe(wrap_svg(edukt_svg, "Edukt (Ausgangsstoff)", last_edukt, "#00f0ff"), height=540)
                 
             with m_col2:
-                components.html(wrap_svg(reagenz_svg, "Reagenz", last_reagenz, "#c084fc"), height=540, scrolling=False)
+                st.iframe(wrap_svg(reagenz_svg, "Reagenz", last_reagenz, "#c084fc"), height=540)
                 
             with m_col3:
-                components.html(wrap_svg(produkt_svg, "Erwartetes Produkt", product_smiles, "#10b981"), height=540, scrolling=False)
+                st.iframe(wrap_svg(produkt_svg, "Erwartetes Produkt", product_smiles, "#10b981"), height=540)
                 
             # Mechanistic Steps
             st.write("### Reaktionsschritte & Zwischenprodukte (Intermediates)")
@@ -714,6 +713,6 @@ if st.session_state.prediction_result is not None:
                 with col_img:
                     if inter_smiles:
                         inter_svg = smiles_to_chemdraw_svg(inter_smiles)
-                        components.html(wrap_svg(inter_svg, f"Zwischenprodukt {step_num}", inter_smiles, style['color']), height=280, scrolling=False)
+                        st.iframe(wrap_svg(inter_svg, f"Zwischenprodukt {step_num}", inter_smiles, style['color']), height=280)
                     else:
                         st.write("")
