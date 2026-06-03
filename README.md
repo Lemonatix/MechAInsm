@@ -1,10 +1,10 @@
-# MechAInsm 🧪
+# MechAInsm
 
 **MechAInsm** (Mechanical AI for Chemistry) ist eine interaktive Streamlit-Webanwendung zur Vorhersage chemischer Reaktionsmechanismen und zur automatischen Visualisierung von Molekülstrukturen im akademischen ChemDraw-Stil (ACS-Dokument-1996-Standard).
 
 ---
 
-## 🚀 Features
+## Features
 
 - **ACS-konforme 2D-Visualisierung**: Automatische Generierung hochauflösender SVG-Moleküldarstellungen aus SMILES-Strings unter Verwendung von RDKit (kalibriert auf akademische Standards: feste Bindungslängen, präzise Schriftgrößen und klare Kekulizierung).
 - **Interaktive Eingabe**: Einfache Angabe von Edukten und Reagenzien via SMILES-Notations-Eingabefeldern.
@@ -13,7 +13,7 @@
 
 ---
 
-## 📁 Projektstruktur
+## Projektstruktur
 
 ```text
 MechAInsm/
@@ -26,7 +26,7 @@ MechAInsm/
 
 ---
 
-## 🛠️ Installation & Ausführung
+## Installation & Ausführung
 
 ### Voraussetzungen
 Stelle sicher, dass Python 3.9+ installiert ist.
@@ -52,7 +52,7 @@ Die Anwendung öffnet sich daraufhin automatisch in deinem Standardbrowser unter
 
 ---
 
-## 🧪 Nutzung
+## Nutzung
 
 1. **Edukt eingeben**: Trage das Ausgangsstoff-SMILES ein (z. B. `CC(=O)O` für Essigsäure).
 2. **Reagenz eingeben**: Trage das Reagenz-SMILES ein (z. B. `CCO` für Ethanol).
@@ -61,7 +61,7 @@ Die Anwendung öffnet sich daraufhin automatisch in deinem Standardbrowser unter
 
 ---
 
-## 🔮 Nächste Schritte
+## Nächste Schritte
 
 Um das Projekt von einem Prototyp in ein vollwertiges wissenschaftliches Tool zu überführen, sind folgende Schritte geplant:
 

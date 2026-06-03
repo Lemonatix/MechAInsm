@@ -1,6 +1,7 @@
+import os
 import streamlit as st
 import streamlit.components.v1 as components
-from core.renderer import smiles_to_chemdraw_svg
+from core.renderer import smiles_to_chemdraw_svg, is_valid_smiles
 from core.mechanism import predict_mechanism
 
 # Set page configuration
@@ -8,7 +9,7 @@ st.set_page_config(
     page_title="MechAInsm - Chemische Reaktionsmechanismen",
     page_icon="🧪",
     layout="wide",
-    initial_sidebar_state="collapsed"
+    initial_sidebar_state="expanded"
 )
 
 def clean_html(html_str: str) -> str:
@@ -473,28 +474,29 @@ with h_col2:
         </svg>
     </div>
     """), unsafe_allow_html=True)
-
 st.write("---")
 
-# Create a clean input form
-with st.form("reaction_form"):
-    st.write("### Reaktionsparameter")
-    
-    col1, col2 = st.columns(2)
-    with col1:
-        edukt_input = st.text_input(
-            "Edukt-SMILES (Ausgangsstoff)", 
-            value="CC(=O)O", 
-            help="Geben Sie den SMILES-String des Edukts ein (z.B. CC(=O)O für Essigsäure)"
-        )
-    with col2:
-        reagenz_input = st.text_input(
-            "Reagenz-SMILES", 
-            value="CCO", 
-            help="Geben Sie den SMILES-String des Reagenzes ein (z.B. CCO für Ethanol)"
-        )
-        
-    submit_button = st.form_submit_button("Mechanismus generieren")
+# Sidebar for API Key and info
+st.sidebar.markdown(clean_html("""
+<div style="padding-top: 1rem;">
+    <h3 style="font-family: 'Outfit', sans-serif; font-weight: 700; color: #f8fafc; margin-bottom: 0.5rem;">Einstellungen</h3>
+</div>
+"""), unsafe_allow_html=True)
+
+api_key_input = st.sidebar.text_input(
+    "Gemini API-Schlüssel",
+    type="password",
+    help="Tragen Sie hier Ihren Gemini API-Schlüssel ein. Er wird nur temporär für diese Session verwendet.",
+    value=os.environ.get("GEMINI_API_KEY", "")
+)
+
+st.sidebar.markdown("---")
+st.sidebar.markdown(clean_html("""
+<div style="font-size: 0.85rem; color: #94a3b8; line-height: 1.5;">
+    <p><strong>Demo-Modus:</strong> Die Standard-Reaktion (CC(=O)O + CCO) läuft als vorkonfiguriertes Beispiel ohne API-Key.</p>
+    <p>Für jede andere Reaktionsgleichung wird ein gültiger Gemini-API-Key benötigt.</p>
+</div>
+"""), unsafe_allow_html=True)
 
 # HTML wrappers to center and display SVGs inside white frame cards
 def wrap_svg(svg_content: str, title: str, smiles: str, accent_color: str) -> str:
@@ -510,7 +512,8 @@ def wrap_svg(svg_content: str, title: str, smiles: str, accent_color: str) -> st
         <style>
             body {{
                 margin: 0;
-                padding: 0;
+                padding: 8px;
+                box-sizing: border-box;
                 background: transparent;
                 overflow: hidden;
                 display: flex;
@@ -529,9 +532,8 @@ def wrap_svg(svg_content: str, title: str, smiles: str, accent_color: str) -> st
                 transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
                 box-shadow: 0 10px 30px rgba(0,0,0,0.2);
                 text-align: center;
-                height: calc(100vh - 4px);
-                width: calc(100vw - 4px);
-                margin: 2px;
+                height: 100%;
+                width: 100%;
                 display: flex;
                 flex-direction: column;
                 justify-content: space-between;
@@ -583,87 +585,135 @@ def wrap_svg(svg_content: str, title: str, smiles: str, accent_color: str) -> st
     </html>
     """)
 
+# Reactive inputs container (Glassmorphism layout)
+with st.form(key="reaktionsparameter_form"):
+    st.write("### Reaktionsparameter")
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        edukt_input = st.text_input(
+            "Edukt-SMILES (Ausgangsstoff)", 
+            value="CC(=O)O", 
+            help="Geben Sie den SMILES-String des Edukts ein (z.B. CC(=O)O für Essigsäure)"
+        )
+        edukt_valid = is_valid_smiles(edukt_input)
+        if not edukt_valid and edukt_input.strip() != "":
+            st.markdown('<p style="color: #ff6b6b; font-size: 0.85rem; margin-top: 0.25rem;">⚠️ Ungültiges SMILES-Format für das Edukt</p>', unsafe_allow_html=True)
+
+    with col2:
+        reagenz_input = st.text_input(
+            "Reagenz-SMILES", 
+            value="CCO", 
+            help="Geben Sie den SMILES-String des Reagenzes ein (z.B. CCO für Ethanol)"
+        )
+        reagenz_valid = is_valid_smiles(reagenz_input)
+        if not reagenz_valid and reagenz_input.strip() != "":
+            st.markdown('<p style="color: #ff6b6b; font-size: 0.85rem; margin-top: 0.25rem;">⚠️ Ungültiges SMILES-Format für das Reagenz</p>', unsafe_allow_html=True)
+
+    # Enable button only if both inputs are valid and not empty
+    is_valid_run = edukt_valid and reagenz_valid and edukt_input.strip() != "" and reagenz_input.strip() != ""
+    
+    submit_button = st.form_submit_button("Mechanismus generieren", disabled=not is_valid_run)
+
+# Initialize session state for prediction caching
+if "prediction_result" not in st.session_state:
+    st.session_state.prediction_result = None
+if "last_inputs" not in st.session_state:
+    st.session_state.last_inputs = (None, None)
+
 # Process and Render Results
 if submit_button:
-    # 1. Execute mechanism prediction placeholder
-    prediction_result = predict_mechanism(edukt_input, reagenz_input)
+    with st.spinner("Gemini AI berechnet Reaktionsmechanismus..."):
+        prediction_result = predict_mechanism(edukt_input, reagenz_input, api_key=api_key_input)
+        st.session_state.prediction_result = prediction_result
+        st.session_state.last_inputs = (edukt_input, reagenz_input)
+
+# Display prediction result if cached
+if st.session_state.prediction_result is not None:
+    prediction_result = st.session_state.prediction_result
+    last_edukt, last_reagenz = st.session_state.last_inputs
     
-    # 2. Extract product SMILES for visualization
-    # If the user typed the default values, let's provide a real reaction product (Ethyl acetate)
-    # otherwise we use the prediction result
-    if edukt_input == "CC(=O)O" and reagenz_input == "CCO":
-        product_smiles = "CC(=O)OCC"  # Ethyl acetate
-    else:
-        product_smiles = prediction_result["prediction"]["product_smiles"]
+    if prediction_result.get("status") == "no_api_key":
+        st.warning(f"🔑 {prediction_result.get('error_message')}")
+    elif prediction_result.get("status") == "error":
+        st.error(f"❌ {prediction_result.get('error_message')}")
+    elif prediction_result.get("status") == "success":
+        # Extract product details
+        pred = prediction_result.get("prediction", {})
+        product_smiles = pred.get("product_smiles", last_edukt)
+        confidence = pred.get("confidence_score", 0.0)
         
-    # Generate ChemDraw-style SVGs
-    edukt_svg = smiles_to_chemdraw_svg(edukt_input)
-    reagenz_svg = smiles_to_chemdraw_svg(reagenz_input)
-    produkt_svg = smiles_to_chemdraw_svg(product_smiles)
-    
-    # Result Section
-    with st.container(key="result-container"):
-        st.markdown(clean_html('<div class="result-header" style="font-size: 1.6rem; font-weight: 600; color: #f8fafc; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 0.75rem; margin-bottom: 1.5rem; font-family: \'Outfit\', sans-serif;">Vorhergesagter Reaktionsmechanismus</div>'), unsafe_allow_html=True)
+        # Generate ChemDraw-style SVGs
+        edukt_svg = smiles_to_chemdraw_svg(last_edukt)
+        reagenz_svg = smiles_to_chemdraw_svg(last_reagenz)
+        produkt_svg = smiles_to_chemdraw_svg(product_smiles)
         
-        # Metadata Row
-        st.markdown(clean_html(f"""
-        <div>
-            <span class="badge">Modell: {prediction_result["model_metadata"]["name"]} ({prediction_result["model_metadata"]["version"]})</span>
-            <span class="badge badge-confidence">Konfidenz: {prediction_result["prediction"]["confidence_score"] * 100:.1f}%</span>
-        </div><br>"""), unsafe_allow_html=True)
-        
-        # Side-by-side molecular columns
-        m_col1, m_col2, m_col3 = st.columns(3)
-        
-        with m_col1:
-            components.html(wrap_svg(edukt_svg, "Edukt (Ausgangsstoff)", edukt_input, "#00f0ff"), height=540, scrolling=False)
+        # Result Section
+        with st.container():
+            st.write("")
+            st.markdown(clean_html('<div class="result-header" style="font-size: 1.6rem; font-weight: 600; color: #f8fafc; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 0.75rem; margin-bottom: 1.5rem; font-family: \'Outfit\', sans-serif;">Vorhergesagter Reaktionsmechanismus</div>'), unsafe_allow_html=True)
             
-        with m_col2:
-            components.html(wrap_svg(reagenz_svg, "Reagenz", reagenz_input, "#c084fc"), height=540, scrolling=False)
+            # Metadata Row
+            model_info = prediction_result.get("model_metadata", {})
+            st.markdown(clean_html(f"""
+            <div>
+                <span class="badge">Modell: {model_info.get("name", "GNN-Transformer")} ({model_info.get("version", "1.0")})</span>
+                <span class="badge badge-confidence">Konfidenz: {confidence * 100:.1f}%</span>
+            </div><br>"""), unsafe_allow_html=True)
             
-        with m_col3:
-            components.html(wrap_svg(produkt_svg, "Erwartetes Produkt", product_smiles, "#10b981"), height=540, scrolling=False)
+            # Side-by-side molecular columns
+            m_col1, m_col2, m_col3 = st.columns(3)
             
-        # Mechanistic Steps
-        st.write("### Reaktionsschritte (Vorschlag)")
-        
-        # Show dynamic steps (customized if it's the default esterification reaction)
-        if edukt_input == "CC(=O)O" and reagenz_input == "CCO":
-            steps = [
-                {"step": 1, "description": "Protonierung der Carbonylgruppe der Essigsäure zur Aktivierung."},
-                {"step": 2, "description": "Nucleophiler Angriff des Ethanol-Sauerstoffatoms an das Carbonylkohlenstoffatom."},
-                {"step": 3, "description": "Protonentransfer und anschließende Eliminierung von Wasser als Abgangsgruppe unter Bildung des Esters."}
+            with m_col1:
+                components.html(wrap_svg(edukt_svg, "Edukt (Ausgangsstoff)", last_edukt, "#00f0ff"), height=540, scrolling=False)
+                
+            with m_col2:
+                components.html(wrap_svg(reagenz_svg, "Reagenz", last_reagenz, "#c084fc"), height=540, scrolling=False)
+                
+            with m_col3:
+                components.html(wrap_svg(produkt_svg, "Erwartetes Produkt", product_smiles, "#10b981"), height=540, scrolling=False)
+                
+            # Mechanistic Steps
+            st.write("### Reaktionsschritte & Zwischenprodukte (Intermediates)")
+            
+            steps = pred.get("pathway", [])
+            
+            step_styles = [
+                {"class": "group-nonmetal", "color": "#00f0ff"},
+                {"class": "group-alkali", "color": "#c084fc"},
+                {"class": "group-nonmetal-c", "color": "#10b981"}
             ]
-        else:
-            steps = prediction_result["prediction"]["pathway"]
-            
-        step_styles = [
-            {"class": "group-nonmetal", "color": "#00f0ff"},
-            {"class": "group-alkali", "color": "#c084fc"},
-            {"class": "group-nonmetal-c", "color": "#10b981"}
-        ]
-            
-        for idx, step in enumerate(steps):
-            style = step_styles[idx % len(step_styles)]
-            col_icon, col_text = st.columns([2, 12])
-            step_num = step["step"] if "step" in step else step.get("step_number", idx + 1)
-            with col_icon:
-                st.markdown(clean_html(f"""
-                <div style="display: flex; justify-content: center; padding-top: 0.5rem;">
-                    <div class="element-tile {style['class']}" style="--tile-color: {style['color']};">
-                        <span class="atomic-number">{step_num}</span>
-                        <span class="element-symbol">S{step_num}</span>
-                        <span class="element-name">Schritt</span>
-                        <span class="atomic-mass" style="font-family: 'JetBrains Mono'; font-size: 0.52rem; color: #475569;">100% OK</span>
-                    </div>
-                </div>"""), unsafe_allow_html=True)
-            with col_text:
-                st.markdown(clean_html(f"""
-                <div class="latex-card" style="border-left: 2px solid rgba(255, 255, 255, 0.04); padding-left: 1.5rem; transition: all 0.35s ease; --tile-color: {style['color']}; margin-bottom: 1.5rem;">
-                    <div class="latex-row-header" style="display: flex; align-items: baseline; gap: 0.5rem; margin-bottom: 0.5rem;">
-                        <span class="latex-num" style="font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; color: #475569;">1.{step_num}</span>
-                        <h5 class="latex-subsection-title" style="font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 1.25rem; color: #f8fafc; display: inline;">Vorhergesagte Umwandlung</h5>
-                        <span class="latex-date" style="margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: #475569;">Aktiv</span>
-                    </div>
-                    <p class="latex-text" style="font-size: 1.15rem; color: #94a3b8; line-height: 1.6;">{step.get("description", "")}</p>
-                </div>"""), unsafe_allow_html=True)
+                
+            for idx, step in enumerate(steps):
+                style = step_styles[idx % len(step_styles)]
+                step_num = step.get("step", idx + 1)
+                inter_smiles = step.get("intermediate_smiles", "")
+                
+                # Step card layout: Icon, Description, Intermediate structure
+                col_icon, col_text, col_img = st.columns([2.5, 7.5, 4])
+                
+                with col_icon:
+                    st.markdown(clean_html(f"""
+                    <div style="display: flex; justify-content: center; padding-top: 0.5rem;">
+                        <div class="element-tile {style['class']}" style="--tile-color: {style['color']};">
+                            <span class="atomic-number">{step_num}</span>
+                            <span class="element-symbol">S{step_num}</span>
+                            <span class="element-name">Schritt</span>
+                            <span class="atomic-mass" style="font-family: 'JetBrains Mono'; font-size: 0.52rem; color: #475569;">OK</span>
+                        </div>
+                    </div>"""), unsafe_allow_html=True)
+                with col_text:
+                    st.markdown(clean_html(f"""
+                    <div class="latex-card" style="border-left: 2px solid rgba(255, 255, 255, 0.04); padding-left: 1.5rem; transition: all 0.35s ease; --tile-color: {style['color']}; margin-bottom: 1.5rem; height: 100%;">
+                        <div class="latex-row-header" style="display: flex; align-items: baseline; gap: 0.5rem; margin-bottom: 0.5rem;">
+                            <span class="latex-num" style="font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; color: #475569;">1.{step_num}</span>
+                            <h5 class="latex-subsection-title" style="font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 1.25rem; color: #f8fafc; display: inline;">Umwandlungsschritt</h5>
+                        </div>
+                        <p class="latex-text" style="font-size: 1.1rem; color: #94a3b8; line-height: 1.6;">{step.get("description", "")}</p>
+                    </div>"""), unsafe_allow_html=True)
+                with col_img:
+                    if inter_smiles:
+                        inter_svg = smiles_to_chemdraw_svg(inter_smiles)
+                        components.html(wrap_svg(inter_svg, f"Zwischenprodukt {step_num}", inter_smiles, style['color']), height=280, scrolling=False)
+                    else:
+                        st.write("")

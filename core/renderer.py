@@ -5,6 +5,18 @@ from rdkit.Chem import rdDepictor
 # pyrefly: ignore [missing-import]
 from rdkit.Chem.Draw import rdMolDraw2D
 
+def is_valid_smiles(smiles: str) -> bool:
+    """
+    Checks if a SMILES string is syntactically and chemically valid according to RDKit.
+    """
+    if not smiles or not isinstance(smiles, str) or smiles.strip() == "":
+        return False
+    try:
+        mol = Chem.MolFromSmiles(smiles)
+        return mol is not None
+    except Exception:
+        return False
+
 def smiles_to_chemdraw_svg(smiles: str) -> str:
     """
     Converts a SMILES string into a ChemDraw-style SVG.
