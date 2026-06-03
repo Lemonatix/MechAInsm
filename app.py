@@ -11,105 +11,468 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Inject custom CSS for premium styling
+# Inject custom CSS for premium mika-riesterer.de styling
 st.markdown("""
 <style>
-    /* Google Font Import */
-    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+    /* Google Fonts Import */
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=JetBrains+Mono:wght@300;400;500;700&display=swap');
     
     /* Global Styles */
-    .reportview-container {
-        font-family: 'Outfit', sans-serif;
+    .stApp {
+        background: radial-gradient(circle at 10% 20%, rgba(0, 240, 255, 0.04) 0%, transparent 40%),
+                    radial-gradient(circle at 90% 80%, rgba(192, 132, 252, 0.06) 0%, transparent 50%),
+                    #07090e !important;
+        font-family: 'Outfit', sans-serif !important;
+        color: #f8fafc !important;
     }
     
-    /* Title and Header Gradient */
-    .title-gradient {
-        background: linear-gradient(135deg, #6366F1 0%, #A855F7 50%, #EC4899 100%);
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+        background: #07090e;
+    }
+    ::-webkit-scrollbar-thumb {
+        background: #0d111c;
+        border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background: #161c2d;
+    }
+    
+    /* Navbar Mockup */
+    .navbar {
+        width: 100%;
+        background: rgba(7, 9, 14, 0.65);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        margin-bottom: 2.5rem;
+        border-radius: 12px;
+    }
+    .nav-container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 1rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .nav-logo {
+        font-family: 'EB Garamond', serif;
+        font-weight: 800;
+        font-size: 1.75rem;
+        color: #f8fafc;
+        letter-spacing: 0.5px;
+        text-decoration: none;
+    }
+    .nav-links {
+        display: flex;
+        gap: 2rem;
+    }
+    .nav-links a {
+        font-family: 'Outfit', sans-serif;
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: #94a3b8;
+        position: relative;
+        padding: 0.25rem 0;
+        text-decoration: none;
+        transition: all 0.35s ease;
+    }
+    .nav-links a:hover, .nav-links a.active {
+        color: #f8fafc;
+    }
+    .nav-links a::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: linear-gradient(90deg, #00f0ff, #c084fc);
+        transition: all 0.35s ease;
+    }
+    .nav-links a:hover::after, .nav-links a.active::after {
+        width: 100%;
+    }
+    
+    /* Hero Title and Subtitle */
+    .hero-name {
+        font-family: 'EB Garamond', serif;
+        font-size: 3.8rem;
+        font-weight: 800;
+        line-height: 1.1;
+        background: linear-gradient(90deg, #00f0ff, #c084fc);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        font-size: 3rem;
-        font-weight: 700;
-        text-align: center;
         margin-bottom: 0.5rem;
+        letter-spacing: -0.5px;
     }
-    .subtitle {
-        text-align: center;
-        color: #94A3B8;
-        font-size: 1.1rem;
-        margin-bottom: 2.5rem;
-    }
-    
-    /* Molecule Card Wrapper */
-    .mol-card-title {
-        text-align: center;
-        font-weight: 600;
-        font-size: 1.1rem;
-        color: #334155;
-        margin-bottom: 0.5rem;
-    }
-    
-    /* Form & Input Styling */
-    div[data-testid="stForm"] {
-        border: 1px solid #E2E8F0;
-        background-color: #F8FAFC;
-        border-radius: 16px;
-        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
-        padding: 2rem;
-    }
-    
-    /* Result Section Styling */
-    .result-container {
-        margin-top: 2rem;
-        padding: 2rem;
-        background-color: #FFFFFF;
-        border: 1px solid #E2E8F0;
-        border-radius: 16px;
-        box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05);
-    }
-    
-    .result-header {
-        font-size: 1.5rem;
-        font-weight: 600;
-        color: #1E293B;
-        border-bottom: 2px solid #F1F5F9;
-        padding-bottom: 0.75rem;
+    .hero-subtitle {
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.2rem;
+        color: #94a3b8;
         margin-bottom: 1.5rem;
+        line-height: 1.6;
     }
     
-    /* Step Styling */
-    .step-box {
-        background-color: #F8FAFC;
-        border-left: 4px solid #6366F1;
-        padding: 1rem;
+    /* Typing Container mimicking site typing animation style */
+    .typing-container {
+        display: flex;
+        align-items: center;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 1.15rem;
+        color: #00f0ff;
+        min-height: 2rem;
         margin-bottom: 1rem;
-        border-radius: 0 8px 8px 0;
     }
-    .step-title {
-        font-weight: 600;
-        color: #475569;
+    .typing-container span::after {
+        content: '_';
+        animation: blink 0.8s infinite;
+        font-weight: bold;
+        color: #00f0ff;
+    }
+    @keyframes blink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0; }
+    }
+    
+    /* Features grid */
+    .features-container {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+        flex-wrap: wrap;
+    }
+    .feature-badge {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.85rem;
+        color: #94a3b8;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+        padding: 0.4rem 0.75rem;
+    }
+    .feature-badge svg {
+        color: #00f0ff;
+    }
+    
+    /* Atomic Orbit Animation styles */
+    .profile-orbit-wrapper {
+        width: 240px;
+        height: 240px;
+        margin: 0 auto;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .profile-svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+    }
+    .orbit-path {
+        stroke-dasharray: 6 6;
+        opacity: 0.25;
+        transition: all 0.35s ease;
+    }
+    .profile-orbit-wrapper:hover .orbit-path {
+        opacity: 0.55;
+    }
+    .nucleus-glow {
+        filter: drop-shadow(0 0 8px #c084fc);
+        animation: pulse-glow 4s ease-in-out infinite;
+        transform-origin: center;
+    }
+    @keyframes pulse-glow {
+        0%, 100% { opacity: 0.75; transform: scale(1); }
+        50% { opacity: 1; transform: scale(1.02); }
+    }
+    .electron-group-1 {
+        transform-origin: 110px 110px;
+        transform: rotate(30deg);
+    }
+    .electron-group-2 {
+        transform-origin: 110px 110px;
+        transform: rotate(-30deg);
+    }
+    .electron-group-3 {
+        transform-origin: 110px 110px;
+        transform: rotate(90deg);
+    }
+    .electron {
+        offset-path: path('M 15 110 a 95 32 0 1 0 190 0 a 95 32 0 1 0 -190 0');
+        offset-rotate: auto;
+        animation: travel-orbit 6s linear infinite;
+    }
+    .electron-1 {
+        animation-duration: 5s;
+        animation-delay: 0s;
+        filter: drop-shadow(0 0 5px #00f0ff);
+    }
+    .electron-2 {
+        animation-duration: 7s;
+        animation-delay: -2s;
+        filter: drop-shadow(0 0 5px #c084fc);
+    }
+    .electron-3 {
+        animation-duration: 6s;
+        animation-delay: -4s;
+        filter: drop-shadow(0 0 5px #10b981);
+    }
+    @keyframes travel-orbit {
+        0% { offset-distance: 0%; }
+        100% { offset-distance: 100%; }
+    }
+    
+    /* Form & Card styling (Glassmorphism) */
+    div[data-testid="stForm"], .result-container {
+        background: rgba(13, 17, 28, 0.7) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        border-radius: 16px !important;
+        backdrop-filter: blur(12px) !important;
+        -webkit-backdrop-filter: blur(12px) !important;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+        padding: 2rem !important;
+        transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        margin-top: 2rem !important;
+    }
+    div[data-testid="stForm"]:hover, .result-container:hover {
+        border-color: rgba(255, 255, 255, 0.15) !important;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+    }
+    
+    /* Input formatting override */
+    div[data-baseweb="input"] {
+        background-color: #030508 !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        border-radius: 8px !important;
+        color: #f8fafc !important;
+        transition: all 0.3s ease !important;
+    }
+    div[data-baseweb="input"]:focus-within {
+        border-color: #00f0ff !important;
+        box-shadow: 0 0 15px rgba(0, 240, 255, 0.2) !important;
+    }
+    input {
+        color: #f8fafc !important;
+        font-family: 'JetBrains Mono', monospace !important;
+    }
+    
+    /* Submit Button styling */
+    div[data-testid="stFormSubmitButton"] button, 
+    button[kind="secondaryFormSubmit"], 
+    .stButton > button {
+        background: linear-gradient(90deg, #00f0ff, #c084fc) !important;
+        color: #07090e !important;
+        border: none !important;
+        font-family: 'Outfit', sans-serif !important;
+        font-weight: 600 !important;
+        border-radius: 8px !important;
+        padding: 0.5rem 1.5rem !important;
+        box-shadow: 0 4px 14px rgba(0, 240, 255, 0.2) !important;
+        transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+    div[data-testid="stFormSubmitButton"] button:hover,
+    button[kind="secondaryFormSubmit"]:hover,
+    .stButton > button:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 6px 20px rgba(0, 240, 255, 0.4) !important;
+        color: #07090e !important;
+    }
+    
+    /* Custom Periodic Element Milestone Tile */
+    .element-tile {
+        width: 72px;
+        height: 72px;
+        border: 2px solid rgba(255, 255, 255, 0.08);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.015);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        cursor: pointer;
+    }
+    .element-tile:hover {
+        transform: scale(1.1);
+        box-shadow: 0 0 15px var(--tile-color);
+        border-color: var(--tile-color);
+    }
+    .element-tile .atomic-number {
+        position: absolute;
+        top: 3px;
+        left: 5px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.65rem;
+        color: #94a3b8;
+    }
+    .element-tile .element-symbol {
+        font-family: 'Outfit', sans-serif;
+        font-weight: 700;
+        font-size: 1.7rem;
+        line-height: 1.1;
+        color: var(--tile-color);
+    }
+    .element-tile .element-name {
+        font-size: 0.55rem;
+        text-transform: uppercase;
+        letter-spacing: 0.2px;
+        color: #94a3b8;
+        margin-top: 1px;
+    }
+    .group-nonmetal {
+        --tile-color: #00f0ff;
+        border-color: rgba(0, 240, 255, 0.25);
+    }
+    .group-alkali {
+        --tile-color: #c084fc;
+        border-color: rgba(192, 132, 252, 0.25);
+    }
+    .group-nonmetal-c {
+        --tile-color: #10b981;
+        border-color: rgba(16, 185, 129, 0.25);
+    }
+    
+    /* LaTeX / Milestone text card styling */
+    .latex-card {
+        border-left: 2px solid rgba(255, 255, 255, 0.04) !important;
+        padding-left: 1.5rem !important;
+        transition: all 0.35s ease !important;
+        margin-bottom: 1.5rem !important;
+    }
+    .latex-card:hover {
+        border-left-color: var(--tile-color) !important;
     }
     
     /* Info badges */
     .badge {
         display: inline-block;
-        padding: 0.25rem 0.75rem;
+        padding: 0.35rem 0.85rem;
         border-radius: 9999px;
         font-size: 0.85rem;
         font-weight: 500;
-        background-color: #EEF2F6;
-        color: #475569;
+        background-color: rgba(255, 255, 255, 0.04) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: #94a3b8 !important;
         margin-right: 0.5rem;
+        font-family: 'Outfit', sans-serif;
     }
     .badge-confidence {
-        background-color: #ECFDF5;
-        color: #059669;
+        background-color: rgba(16, 185, 129, 0.1) !important;
+        border: 1px solid rgba(16, 185, 129, 0.2);
+        color: #10b981 !important;
+    }
+    
+    /* Hide default Streamlit elements */
+    #MainMenu, footer, header[data-testid="stHeader"] {
+        visibility: hidden !important;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# Application Header
-st.markdown('<h1 class="title-gradient">MechAInsm</h1>', unsafe_allow_html=True)
-st.markdown('<p class="subtitle">Vorhersage chemischer Reaktionsmechanismen & Visualisierung im ChemDraw-Stil</p>', unsafe_allow_html=True)
+# Sticky navigation bar at the top (mocked)
+st.markdown("""
+<header class="navbar">
+    <div class="nav-container">
+        <a href="#" class="nav-logo">MechAInsm</a>
+        <nav class="nav-links">
+            <a href="#" class="active">Home</a>
+            <a href="#">Predictor</a>
+            <a href="#">Models</a>
+            <a href="https://github.com/Lemonatix" target="_blank">Github</a>
+        </nav>
+    </div>
+</header>
+""", unsafe_allow_html=True)
+
+# Hero Section (Side-by-side Layout: Title Block & Rotating Orbits Animation)
+h_col1, h_col2 = st.columns([5, 3])
+with h_col1:
+    st.markdown("""
+    <div style="padding-top: 1rem;">
+        <h1 class="hero-name">MechAInsm.</h1>
+        <div class="typing-container">
+            <span>Mathematics, Chemistry & Programming</span>
+        </div>
+        <p class="hero-subtitle">
+            Eine künstliche Intelligenz zur prädiktiven Bestimmung und interaktiven Visualisierung 
+            chemischer Reaktionsmechanismen.
+        </p>
+        <div class="features-container">
+            <div class="feature-badge">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+                GNN-Transformer
+            </div>
+            <div class="feature-badge">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                Echtzeit
+            </div>
+            <div class="feature-badge">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                </svg>
+                SVG Export
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+with h_col2:
+    st.markdown("""
+    <div class="profile-orbit-wrapper">
+        <svg class="profile-svg" viewBox="0 0 220 220" width="100%" height="100%">
+            <defs>
+                <linearGradient id="glow-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#00f0ff" />
+                    <stop offset="50%" stop-color="#c084fc" />
+                    <stop offset="100%" stop-color="#10b981" />
+                </linearGradient>
+            </defs>
+            
+            <g class="electron-group-1">
+                <ellipse class="orbit-path" cx="110" cy="110" rx="95" ry="32" fill="none" stroke="url(#glow-grad)" stroke-width="1.5" />
+                <circle class="electron electron-1" r="6" fill="#00f0ff" />
+            </g>
+            
+            <g class="electron-group-2">
+                <ellipse class="orbit-path" cx="110" cy="110" rx="95" ry="32" fill="none" stroke="url(#glow-grad)" stroke-width="1.5" />
+                <circle class="electron electron-2" r="6" fill="#c084fc" />
+            </g>
+            
+            <g class="electron-group-3">
+                <ellipse class="orbit-path" cx="110" cy="110" rx="95" ry="32" fill="none" stroke="url(#glow-grad)" stroke-width="1.5" />
+                <circle class="electron electron-3" r="6" fill="#10b981" />
+            </g>
+            
+            <circle cx="110" cy="110" r="68" fill="none" stroke="url(#glow-grad)" stroke-width="2.5" class="nucleus-glow" />
+            <circle cx="110" cy="110" r="65" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1" />
+            
+            <!-- Chemical reaction beaker line-art inside nucleus -->
+            <g transform="translate(92, 90) scale(1.15)" stroke="#f8fafc" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4.5 3h15M6 3v16a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V3M6 14h12M8.5 3v5.5a2.5 2.5 0 0 0 5 0V3"/>
+                <circle cx="11" cy="11" r="1" fill="#00f0ff" stroke="none" />
+                <circle cx="13" cy="12" r="0.8" fill="#c084fc" stroke="none" />
+                <circle cx="10" cy="16" r="1.2" fill="#10b981" stroke="none" />
+            </g>
+        </svg>
+    </div>
+    """, unsafe_allow_html=True)
+
+st.write("---")
 
 # Create a clean input form
 with st.form("reaction_form"):
@@ -131,6 +494,93 @@ with st.form("reaction_form"):
         
     submit_button = st.form_submit_button("Mechanismus generieren")
 
+# HTML wrappers to center and display SVGs inside white frame cards
+def wrap_svg(svg_content: str, title: str, smiles: str, accent_color: str) -> str:
+    if not svg_content:
+        return ""
+    # Inject styling to make SVG fit its container correctly
+    svg_content = svg_content.replace('<svg ', '<svg style="width: 100%; height: 100%; max-height: 380px;" ')
+    return f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+        <style>
+            body {{
+                margin: 0;
+                padding: 0;
+                background: transparent;
+                overflow: hidden;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+            }}
+            .card {{
+                box-sizing: border-box;
+                background: rgba(13, 17, 28, 0.7);
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                border-radius: 12px;
+                padding: 1.5rem;
+                backdrop-filter: blur(12px);
+                -webkit-backdrop-filter: blur(12px);
+                transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+                text-align: center;
+                height: calc(100vh - 4px);
+                width: calc(100vw - 4px);
+                margin: 2px;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+            }}
+            .card:hover {{
+                border-color: {accent_color};
+                box-shadow: 0 0 15px {accent_color}33, 0 15px 35px rgba(0,0,0,0.3);
+                transform: translateY(-4px);
+            }}
+            .title {{
+                font-family: 'Outfit', sans-serif;
+                font-weight: 600;
+                font-size: 1.05rem;
+                color: #f8fafc;
+                margin-bottom: 0.75rem;
+            }}
+            .svg-container {{
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                flex-grow: 1;
+                height: 320px;
+                background: transparent;
+            }}
+            .smiles {{
+                font-family: 'JetBrains Mono', monospace;
+                font-size: 0.8rem;
+                color: #94a3b8;
+                background: rgba(3, 5, 8, 0.8);
+                border: 1px solid rgba(255, 255, 255, 0.05);
+                padding: 0.4rem;
+                border-radius: 6px;
+                word-break: break-all;
+                margin-top: 0.75rem;
+            }}
+        </style>
+    </head>
+    <body>
+        <div class="card">
+            <div>
+                <div class="title">{title}</div>
+                <div class="svg-container">
+                    {svg_content}
+                </div>
+            </div>
+            <div class="smiles">{smiles}</div>
+        </div>
+    </body>
+    </html>
+    """
+
 # Process and Render Results
 if submit_button:
     # 1. Execute mechanism prediction placeholder
@@ -149,29 +599,9 @@ if submit_button:
     reagenz_svg = smiles_to_chemdraw_svg(reagenz_input)
     produkt_svg = smiles_to_chemdraw_svg(product_smiles)
     
-    # HTML wrappers to center and display SVGs inside white frame cards
-    def wrap_svg(svg_content: str) -> str:
-        if not svg_content:
-            return ""
-        return f"""
-        <div style="
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            background-color: white; 
-            border: 1px solid #E2E8F0; 
-            border-radius: 12px; 
-            padding: 10px; 
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-            height: 420px;
-        ">
-            {svg_content}
-        </div>
-        """
-
     # Result Section
     st.markdown('<div class="result-container">', unsafe_allow_html=True)
-    st.markdown('<div class="result-header">🧪 Vorhergesagter Reaktionsmechanismus</div>', unsafe_allow_html=True)
+    st.markdown('<div class="result-header" style="font-size: 1.6rem; font-weight: 600; color: #f8fafc; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 0.75rem; margin-bottom: 1.5rem; font-family: \'Outfit\', sans-serif;">🧪 Vorhergesagter Reaktionsmechanismus</div>', unsafe_allow_html=True)
     
     # Metadata Row
     st.markdown(
@@ -186,19 +616,13 @@ if submit_button:
     m_col1, m_col2, m_col3 = st.columns(3)
     
     with m_col1:
-        st.markdown('<div class="mol-card-title">Edukt (Ausgangsstoff)</div>', unsafe_allow_html=True)
-        components.html(wrap_svg(edukt_svg), height=440, scrolling=False)
-        st.code(edukt_input, language="text")
+        components.html(wrap_svg(edukt_svg, "Edukt (Ausgangsstoff)", edukt_input, "#00f0ff"), height=540, scrolling=False)
         
     with m_col2:
-        st.markdown('<div class="mol-card-title">Reagenz</div>', unsafe_allow_html=True)
-        components.html(wrap_svg(reagenz_svg), height=440, scrolling=False)
-        st.code(reagenz_input, language="text")
+        components.html(wrap_svg(reagenz_svg, "Reagenz", reagenz_input, "#c084fc"), height=540, scrolling=False)
         
     with m_col3:
-        st.markdown('<div class="mol-card-title">Erwartetes Produkt</div>', unsafe_allow_html=True)
-        components.html(wrap_svg(produkt_svg), height=440, scrolling=False)
-        st.code(product_smiles, language="text")
+        components.html(wrap_svg(produkt_svg, "Erwartetes Produkt", product_smiles, "#10b981"), height=540, scrolling=False)
         
     # Mechanistic Steps
     st.write("### ⚙️ Reaktionsschritte (Vorschlag)")
@@ -213,13 +637,37 @@ if submit_button:
     else:
         steps = prediction_result["prediction"]["pathway"]
         
-    for step in steps:
-        st.markdown(
-            f'<div class="step-box">'
-            f'<div class="step-title">Schritt {step["step"] if "step" in step else step.get("step_number", "?")}</div>'
-            f'<div>{step.get("description", "")}</div>'
-            f'</div>',
-            unsafe_allow_html=True
-        )
+    step_styles = [
+        {"class": "group-nonmetal", "color": "#00f0ff"},
+        {"class": "group-alkali", "color": "#c084fc"},
+        {"class": "group-nonmetal-c", "color": "#10b981"}
+    ]
+        
+    for idx, step in enumerate(steps):
+        style = step_styles[idx % len(step_styles)]
+        col_icon, col_text = st.columns([2, 12])
+        step_num = step["step"] if "step" in step else step.get("step_number", idx + 1)
+        with col_icon:
+            st.markdown(f"""
+            <div style="display: flex; justify-content: center; padding-top: 0.5rem;">
+                <div class="element-tile {style['class']}" style="--tile-color: {style['color']};">
+                    <span class="atomic-number">{step_num}</span>
+                    <span class="element-symbol">S{step_num}</span>
+                    <span class="element-name">Schritt</span>
+                    <span class="atomic-mass" style="font-family: 'JetBrains Mono'; font-size: 0.52rem; color: #475569;">100% OK</span>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+        with col_text:
+            st.markdown(f"""
+            <div class="latex-card" style="border-left: 2px solid rgba(255, 255, 255, 0.04); padding-left: 1.5rem; transition: all 0.35s ease; --tile-color: {style['color']}; margin-bottom: 1.5rem;">
+                <div class="latex-row-header" style="display: flex; align-items: baseline; gap: 0.5rem; margin-bottom: 0.5rem;">
+                    <span class="latex-num" style="font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; color: #475569;">1.{step_num}</span>
+                    <h5 class="latex-subsection-title" style="font-family: 'EB Garamond', serif; font-size: 1.3rem; font-weight: 700; color: #f8fafc; display: inline;">Vorhergesagte Umwandlung</h5>
+                    <span class="latex-date" style="margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: #475569;">Aktiv</span>
+                </div>
+                <p class="latex-text" style="font-size: 1.15rem; color: #94a3b8; line-height: 1.6;">{step.get("description", "")}</p>
+            </div>
+            """, unsafe_allow_html=True)
         
     st.markdown('</div>', unsafe_allow_html=True)

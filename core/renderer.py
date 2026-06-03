@@ -51,9 +51,23 @@ def smiles_to_chemdraw_svg(smiles: str) -> str:
     opts.minFontSize = 12
     opts.fixedFontSize = 12
     
-    # White background
-    opts.backgroundColour = rdMolDraw2D.DrawColour(1.0, 1.0, 1.0, 1.0)
+    # Transparent background for seamless dark integration
+    opts.backgroundColour = rdMolDraw2D.DrawColour(0.0, 0.0, 0.0, 0.0)
     opts.clearBackground = True
+
+    # Custom atom palette for dark mode contrast (inspired by mika-riesterer.de theme)
+    opts.updateAtomPalette({
+        1: (0.9, 0.9, 0.9),       # Hydrogen: light gray
+        6: (0.97, 0.98, 0.99),   # Carbon/Bonds: off-white
+        7: (0.22, 0.74, 0.97),   # Nitrogen: cyan-blue
+        8: (0.96, 0.25, 0.37),   # Oxygen: red-rose
+        9: (0.2, 0.83, 0.60),    # Fluorine: green-mint
+        15: (0.98, 0.57, 0.24),  # Phosphorus: orange
+        16: (0.98, 0.75, 0.14),  # Sulfur: yellow-gold
+        17: (0.06, 0.73, 0.50),  # Chlorine: green
+        35: (0.97, 0.44, 0.44),  # Bromine: light-red
+        53: (0.75, 0.52, 0.99),  # Iodine: purple
+    })
 
     # Render molecule to SVG
     drawer.DrawMolecule(mol)
