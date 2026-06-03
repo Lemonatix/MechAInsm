@@ -52,7 +52,7 @@ def smiles_to_chemdraw_svg(smiles: str) -> str:
     opts.fixedFontSize = 12
     
     # Transparent background for seamless dark integration
-    opts.backgroundColour = rdMolDraw2D.DrawColour(0.0, 0.0, 0.0, 0.0)
+    opts.setBackgroundColour((0.0, 0.0, 0.0, 0.0))
     opts.clearBackground = True
 
     # Custom atom palette for dark mode contrast (inspired by mika-riesterer.de theme)

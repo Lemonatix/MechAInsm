@@ -11,8 +11,17 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
+def clean_html(html_str: str) -> str:
+    """
+    Strips leading/trailing whitespace from each line and removes blank lines.
+    This prevents the Streamlit Markdown parser from treating indented HTML blocks
+    as Markdown preformatted code blocks.
+    """
+    lines = [line.strip() for line in html_str.splitlines()]
+    return "\n".join(line for line in lines if line)
+
 # Inject custom CSS for premium mika-riesterer.de styling
-st.markdown("""
+st.markdown(clean_html("""
 <style>
     /* Google Fonts Import */
     @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=JetBrains+Mono:wght@300;400;500;700&display=swap');
@@ -60,11 +69,14 @@ st.markdown("""
         align-items: center;
     }
     .nav-logo {
-        font-family: 'EB Garamond', serif;
+        font-family: 'Outfit', sans-serif;
         font-weight: 800;
-        font-size: 1.75rem;
-        color: #f8fafc;
-        letter-spacing: 0.5px;
+        font-size: 1.5rem;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        background: linear-gradient(90deg, #00f0ff, #c084fc);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
         text-decoration: none;
     }
     .nav-links {
@@ -100,15 +112,15 @@ st.markdown("""
     
     /* Hero Title and Subtitle */
     .hero-name {
-        font-family: 'EB Garamond', serif;
-        font-size: 3.8rem;
+        font-family: 'Outfit', sans-serif;
         font-weight: 800;
+        font-size: 3.8rem;
         line-height: 1.1;
         background: linear-gradient(90deg, #00f0ff, #c084fc);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         margin-bottom: 0.5rem;
-        letter-spacing: -0.5px;
+        letter-spacing: -1px;
     }
     .hero-subtitle {
         font-family: 'Outfit', sans-serif;
@@ -231,18 +243,18 @@ st.markdown("""
     }
     
     /* Form & Card styling (Glassmorphism) */
-    div[data-testid="stForm"], .result-container {
+    div[data-testid="stForm"], .st-key-result-container {
         background: rgba(13, 17, 28, 0.7) !important;
         border: 1px solid rgba(255, 255, 255, 0.08) !important;
         border-radius: 16px !important;
         backdrop-filter: blur(12px) !important;
         -webkit-backdrop-filter: blur(12px) !important;
         box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
-        padding: 2rem !important;
+        padding: 2.5rem !important;
         transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1) !important;
         margin-top: 2rem !important;
     }
-    div[data-testid="stForm"]:hover, .result-container:hover {
+    div[data-testid="stForm"]:hover, .st-key-result-container:hover {
         border-color: rgba(255, 255, 255, 0.15) !important;
         box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
     }
@@ -377,10 +389,10 @@ st.markdown("""
         visibility: hidden !important;
     }
 </style>
-""", unsafe_allow_html=True)
+"""), unsafe_allow_html=True)
 
 # Sticky navigation bar at the top (mocked)
-st.markdown("""
+st.markdown(clean_html("""
 <header class="navbar">
     <div class="nav-container">
         <a href="#" class="nav-logo">MechAInsm</a>
@@ -392,20 +404,20 @@ st.markdown("""
         </nav>
     </div>
 </header>
-""", unsafe_allow_html=True)
+"""), unsafe_allow_html=True)
 
 # Hero Section (Side-by-side Layout: Title Block & Rotating Orbits Animation)
 h_col1, h_col2 = st.columns([5, 3])
 with h_col1:
-    st.markdown("""
+    st.markdown(clean_html("""
     <div style="padding-top: 1rem;">
         <h1 class="hero-name">MechAInsm.</h1>
         <div class="typing-container">
-            <span>Mathematics, Chemistry & Programming</span>
+            <span>Predicting chemical mechanisms</span>
         </div>
         <p class="hero-subtitle">
-            Eine künstliche Intelligenz zur prädiktiven Bestimmung und interaktiven Visualisierung 
-            chemischer Reaktionsmechanismen.
+            An artificial intelligence for determining and creating interactive vizualisations 
+            of chemical reaction mechanisms.
         </p>
         <div class="features-container">
             <div class="feature-badge">
@@ -429,10 +441,10 @@ with h_col1:
             </div>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """), unsafe_allow_html=True)
     
 with h_col2:
-    st.markdown("""
+    st.markdown(clean_html("""
     <div class="profile-orbit-wrapper">
         <svg class="profile-svg" viewBox="0 0 220 220" width="100%" height="100%">
             <defs>
@@ -442,41 +454,31 @@ with h_col2:
                     <stop offset="100%" stop-color="#10b981" />
                 </linearGradient>
             </defs>
-            
             <g class="electron-group-1">
                 <ellipse class="orbit-path" cx="110" cy="110" rx="95" ry="32" fill="none" stroke="url(#glow-grad)" stroke-width="1.5" />
                 <circle class="electron electron-1" r="6" fill="#00f0ff" />
             </g>
-            
             <g class="electron-group-2">
                 <ellipse class="orbit-path" cx="110" cy="110" rx="95" ry="32" fill="none" stroke="url(#glow-grad)" stroke-width="1.5" />
                 <circle class="electron electron-2" r="6" fill="#c084fc" />
             </g>
-            
             <g class="electron-group-3">
                 <ellipse class="orbit-path" cx="110" cy="110" rx="95" ry="32" fill="none" stroke="url(#glow-grad)" stroke-width="1.5" />
                 <circle class="electron electron-3" r="6" fill="#10b981" />
             </g>
-            
             <circle cx="110" cy="110" r="68" fill="none" stroke="url(#glow-grad)" stroke-width="2.5" class="nucleus-glow" />
             <circle cx="110" cy="110" r="65" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1" />
-            
-            <!-- Chemical reaction beaker line-art inside nucleus -->
-            <g transform="translate(92, 90) scale(1.15)" stroke="#f8fafc" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M4.5 3h15M6 3v16a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V3M6 14h12M8.5 3v5.5a2.5 2.5 0 0 0 5 0V3"/>
-                <circle cx="11" cy="11" r="1" fill="#00f0ff" stroke="none" />
-                <circle cx="13" cy="12" r="0.8" fill="#c084fc" stroke="none" />
-                <circle cx="10" cy="16" r="1.2" fill="#10b981" stroke="none" />
-            </g>
+            <!-- Solid glowing nuclear node inside central orbit -->
+            <circle cx="110" cy="110" r="12" fill="url(#glow-grad)" style="filter: drop-shadow(0 0 8px #c084fc);" />
         </svg>
     </div>
-    """, unsafe_allow_html=True)
+    """), unsafe_allow_html=True)
 
 st.write("---")
 
 # Create a clean input form
 with st.form("reaction_form"):
-    st.write("### 🧪 Reaktionsparameter")
+    st.write("### Reaktionsparameter")
     
     col1, col2 = st.columns(2)
     with col1:
@@ -500,7 +502,7 @@ def wrap_svg(svg_content: str, title: str, smiles: str, accent_color: str) -> st
         return ""
     # Inject styling to make SVG fit its container correctly
     svg_content = svg_content.replace('<svg ', '<svg style="width: 100%; height: 100%; max-height: 380px;" ')
-    return f"""
+    return clean_html(f"""
     <!DOCTYPE html>
     <html>
     <head>
@@ -579,7 +581,7 @@ def wrap_svg(svg_content: str, title: str, smiles: str, accent_color: str) -> st
         </div>
     </body>
     </html>
-    """
+    """)
 
 # Process and Render Results
 if submit_button:
@@ -600,74 +602,68 @@ if submit_button:
     produkt_svg = smiles_to_chemdraw_svg(product_smiles)
     
     # Result Section
-    st.markdown('<div class="result-container">', unsafe_allow_html=True)
-    st.markdown('<div class="result-header" style="font-size: 1.6rem; font-weight: 600; color: #f8fafc; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 0.75rem; margin-bottom: 1.5rem; font-family: \'Outfit\', sans-serif;">🧪 Vorhergesagter Reaktionsmechanismus</div>', unsafe_allow_html=True)
-    
-    # Metadata Row
-    st.markdown(
-        f'<div>'
-        f'<span class="badge">Modell: {prediction_result["model_metadata"]["name"]} ({prediction_result["model_metadata"]["version"]})</span>'
-        f'<span class="badge badge-confidence">Konfidenz: {prediction_result["prediction"]["confidence_score"] * 100:.1f}%</span>'
-        f'</div><br>',
-        unsafe_allow_html=True
-    )
-    
-    # Side-by-side molecular columns
-    m_col1, m_col2, m_col3 = st.columns(3)
-    
-    with m_col1:
-        components.html(wrap_svg(edukt_svg, "Edukt (Ausgangsstoff)", edukt_input, "#00f0ff"), height=540, scrolling=False)
+    with st.container(key="result-container"):
+        st.markdown(clean_html('<div class="result-header" style="font-size: 1.6rem; font-weight: 600; color: #f8fafc; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 0.75rem; margin-bottom: 1.5rem; font-family: \'Outfit\', sans-serif;">Vorhergesagter Reaktionsmechanismus</div>'), unsafe_allow_html=True)
         
-    with m_col2:
-        components.html(wrap_svg(reagenz_svg, "Reagenz", reagenz_input, "#c084fc"), height=540, scrolling=False)
+        # Metadata Row
+        st.markdown(clean_html(f"""
+        <div>
+            <span class="badge">Modell: {prediction_result["model_metadata"]["name"]} ({prediction_result["model_metadata"]["version"]})</span>
+            <span class="badge badge-confidence">Konfidenz: {prediction_result["prediction"]["confidence_score"] * 100:.1f}%</span>
+        </div><br>"""), unsafe_allow_html=True)
         
-    with m_col3:
-        components.html(wrap_svg(produkt_svg, "Erwartetes Produkt", product_smiles, "#10b981"), height=540, scrolling=False)
+        # Side-by-side molecular columns
+        m_col1, m_col2, m_col3 = st.columns(3)
         
-    # Mechanistic Steps
-    st.write("### ⚙️ Reaktionsschritte (Vorschlag)")
-    
-    # Show dynamic steps (customized if it's the default esterification reaction)
-    if edukt_input == "CC(=O)O" and reagenz_input == "CCO":
-        steps = [
-            {"step": 1, "description": "Protonierung der Carbonylgruppe der Essigsäure zur Aktivierung."},
-            {"step": 2, "description": "Nucleophiler Angriff des Ethanol-Sauerstoffatoms an das Carbonylkohlenstoffatom."},
-            {"step": 3, "description": "Protonentransfer und anschließende Eliminierung von Wasser als Abgangsgruppe unter Bildung des Esters."}
+        with m_col1:
+            components.html(wrap_svg(edukt_svg, "Edukt (Ausgangsstoff)", edukt_input, "#00f0ff"), height=540, scrolling=False)
+            
+        with m_col2:
+            components.html(wrap_svg(reagenz_svg, "Reagenz", reagenz_input, "#c084fc"), height=540, scrolling=False)
+            
+        with m_col3:
+            components.html(wrap_svg(produkt_svg, "Erwartetes Produkt", product_smiles, "#10b981"), height=540, scrolling=False)
+            
+        # Mechanistic Steps
+        st.write("### Reaktionsschritte (Vorschlag)")
+        
+        # Show dynamic steps (customized if it's the default esterification reaction)
+        if edukt_input == "CC(=O)O" and reagenz_input == "CCO":
+            steps = [
+                {"step": 1, "description": "Protonierung der Carbonylgruppe der Essigsäure zur Aktivierung."},
+                {"step": 2, "description": "Nucleophiler Angriff des Ethanol-Sauerstoffatoms an das Carbonylkohlenstoffatom."},
+                {"step": 3, "description": "Protonentransfer und anschließende Eliminierung von Wasser als Abgangsgruppe unter Bildung des Esters."}
+            ]
+        else:
+            steps = prediction_result["prediction"]["pathway"]
+            
+        step_styles = [
+            {"class": "group-nonmetal", "color": "#00f0ff"},
+            {"class": "group-alkali", "color": "#c084fc"},
+            {"class": "group-nonmetal-c", "color": "#10b981"}
         ]
-    else:
-        steps = prediction_result["prediction"]["pathway"]
-        
-    step_styles = [
-        {"class": "group-nonmetal", "color": "#00f0ff"},
-        {"class": "group-alkali", "color": "#c084fc"},
-        {"class": "group-nonmetal-c", "color": "#10b981"}
-    ]
-        
-    for idx, step in enumerate(steps):
-        style = step_styles[idx % len(step_styles)]
-        col_icon, col_text = st.columns([2, 12])
-        step_num = step["step"] if "step" in step else step.get("step_number", idx + 1)
-        with col_icon:
-            st.markdown(f"""
-            <div style="display: flex; justify-content: center; padding-top: 0.5rem;">
-                <div class="element-tile {style['class']}" style="--tile-color: {style['color']};">
-                    <span class="atomic-number">{step_num}</span>
-                    <span class="element-symbol">S{step_num}</span>
-                    <span class="element-name">Schritt</span>
-                    <span class="atomic-mass" style="font-family: 'JetBrains Mono'; font-size: 0.52rem; color: #475569;">100% OK</span>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
-        with col_text:
-            st.markdown(f"""
-            <div class="latex-card" style="border-left: 2px solid rgba(255, 255, 255, 0.04); padding-left: 1.5rem; transition: all 0.35s ease; --tile-color: {style['color']}; margin-bottom: 1.5rem;">
-                <div class="latex-row-header" style="display: flex; align-items: baseline; gap: 0.5rem; margin-bottom: 0.5rem;">
-                    <span class="latex-num" style="font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; color: #475569;">1.{step_num}</span>
-                    <h5 class="latex-subsection-title" style="font-family: 'EB Garamond', serif; font-size: 1.3rem; font-weight: 700; color: #f8fafc; display: inline;">Vorhergesagte Umwandlung</h5>
-                    <span class="latex-date" style="margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: #475569;">Aktiv</span>
-                </div>
-                <p class="latex-text" style="font-size: 1.15rem; color: #94a3b8; line-height: 1.6;">{step.get("description", "")}</p>
-            </div>
-            """, unsafe_allow_html=True)
-        
-    st.markdown('</div>', unsafe_allow_html=True)
+            
+        for idx, step in enumerate(steps):
+            style = step_styles[idx % len(step_styles)]
+            col_icon, col_text = st.columns([2, 12])
+            step_num = step["step"] if "step" in step else step.get("step_number", idx + 1)
+            with col_icon:
+                st.markdown(clean_html(f"""
+                <div style="display: flex; justify-content: center; padding-top: 0.5rem;">
+                    <div class="element-tile {style['class']}" style="--tile-color: {style['color']};">
+                        <span class="atomic-number">{step_num}</span>
+                        <span class="element-symbol">S{step_num}</span>
+                        <span class="element-name">Schritt</span>
+                        <span class="atomic-mass" style="font-family: 'JetBrains Mono'; font-size: 0.52rem; color: #475569;">100% OK</span>
+                    </div>
+                </div>"""), unsafe_allow_html=True)
+            with col_text:
+                st.markdown(clean_html(f"""
+                <div class="latex-card" style="border-left: 2px solid rgba(255, 255, 255, 0.04); padding-left: 1.5rem; transition: all 0.35s ease; --tile-color: {style['color']}; margin-bottom: 1.5rem;">
+                    <div class="latex-row-header" style="display: flex; align-items: baseline; gap: 0.5rem; margin-bottom: 0.5rem;">
+                        <span class="latex-num" style="font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; color: #475569;">1.{step_num}</span>
+                        <h5 class="latex-subsection-title" style="font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 1.25rem; color: #f8fafc; display: inline;">Vorhergesagte Umwandlung</h5>
+                        <span class="latex-date" style="margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: #475569;">Aktiv</span>
+                    </div>
+                    <p class="latex-text" style="font-size: 1.15rem; color: #94a3b8; line-height: 1.6;">{step.get("description", "")}</p>
+                </div>"""), unsafe_allow_html=True)
