@@ -51,7 +51,7 @@ streamlit run app.py
 Die Anwendung öffnet sich daraufhin automatisch in deinem Standardbrowser unter `http://localhost:8501`.
 
 ---
-
+cd
 ## Nutzung
 
 1. **Edukt eingeben**: Trage das Ausgangsstoff-SMILES ein (z. B. `CC(=O)O` für Essigsäure).
